@@ -13,14 +13,6 @@ use App\Entity\Category;
 
 class ProductController extends AbstractController
 {
-    #[Route('/')]
-    public function index(): Response
-    {
-        return $this->render('product/index.html.twig', [
-            'message' => 'Hello World',
-        ]);
-    }
-
     #[Route('/products', name: 'app_products', methods: ['GET'])]
     public function listProducts(ManagerRegistry $doctrine): Response
     {

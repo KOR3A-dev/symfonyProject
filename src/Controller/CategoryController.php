@@ -12,14 +12,6 @@ use App\Entity\Category;
 
 class CategoryController extends AbstractController
 {
-    #[Route('/category', name: 'app_category')]
-    public function index(): Response
-    {
-        return $this->render('category/index.html.twig', [
-            'controller_name' => 'CategoryController',
-        ]);
-    }
-
     #[Route('/categorys', name: 'app_categorys', methods: ['GET'])]
     public function listCategorys(ManagerRegistry $doctrine): Response
     {
