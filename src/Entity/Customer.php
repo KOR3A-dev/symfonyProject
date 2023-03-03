@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\CustomerRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Order;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
@@ -28,6 +29,25 @@ class Customer
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_birth = null;
+
+    /**
+     * Order to customer relationship
+     */
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')]
+    private $orders;
+
+    public function __construct()
+    {
+        $this->orders = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection|Order[]
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
 
     public function getId(): ?int
     {

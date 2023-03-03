@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Customer;
@@ -33,7 +34,7 @@ class CustomerController extends AbstractController
     }
    
     #[Route('/create/customer', name: 'app_create_customer', methods: ['POST'])]
-    public function crearCustomer(Request $request, ManagerRegistry $doctrine): Response
+    public function createCustomer(Request $request, ManagerRegistry $doctrine): Response
     {
         $customer = new Customer();
         $customer->setFullname($request->request->get('fullname'));
@@ -41,8 +42,8 @@ class CustomerController extends AbstractController
         
         /* encript password */
         $hashedPassword = password_hash($request->request->get('password') . bin2hex(random_bytes(22)), PASSWORD_BCRYPT);
-        
         $customer->setPassword($hashedPassword);
+
         $customer->setAddress($request->request->get('address'));
         $customer->setDateBirth(new \DateTime($request->request->get('date_birth')));
 
@@ -53,5 +54,26 @@ class CustomerController extends AbstractController
         return new JsonResponse([
             'message' => 'The customer was successfully created',
         ], Response::HTTP_CREATED);
+    }
+
+    #[Route('/login', name: 'app_login', methods: ['POST'])]
+    public function login(Request $request, ManagerRegistry $doctrine, SessionInterface $session): JsonResponse
+    {
+        $email = $request->request->get('email');
+        $password = $request->request->get('password');
+
+        $customer = $doctrine->getRepository(Customer::class)->findOneBy(['email' => $email]);
+
+        if (!$customer || !password_verify($password, $customer->getPassword())) {
+            return new JsonResponse([
+                'message' => 'Invalid email or password',
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $session->set('customer', $customer->getId());
+
+        return new JsonResponse([
+            'message' => 'Logged in successfully',
+        ], Response::HTTP_OK);
     }
 }
