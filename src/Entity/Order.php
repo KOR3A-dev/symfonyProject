@@ -23,9 +23,6 @@ class Order
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $order_date = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $total = null;
-
     /**
      * Customer to order relationship
      */
@@ -80,15 +77,4 @@ class Order
         return $this;
     }
 
-    public function getTotal(): ?string
-    {
-        return $this->total;
-    }
-
-    public function setTotal(?string $total): self
-    {
-        $this->total = $total;
-
-        return $this;
-    }
 }

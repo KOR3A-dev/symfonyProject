@@ -33,7 +33,7 @@
                         :items="product.products" 
                         :fields="product.productFields">
                         <template #cell(actions)="row">
-                            <b-button class="my-2 rounded-circle" variant="primary" @click="getProduct(row.item); showCard=true"> <i class="fa-solid fa-eye"></i></b-button>
+                            <a href="#product-card"><b-button class="my-2 rounded-circle" variant="primary" @click="getProduct(row.item); showCard=true"> <i class="fa-solid fa-eye"></i></b-button></a>
                             <b-button class="my-2 rounded-circle" variant="danger" @click="inactiveProduct(row.item)"><i class="fa-solid fa-trash"></i></b-button>
                             <b-button class="my-2 rounded-circle" variant="success"><i class=" my-1 fa-solid fa-cart-shopping"></i></b-button>
                         </template>
@@ -42,7 +42,7 @@
             </div>
         </div>
         <hr class="my-4">
-        <div class="container my-1">
+        <div id="product-card" class="container my-1">
             <div class="row" v-if="showCard">
                 <h1 class="text-center mb-4">Product Information <i class="fa-solid fa-circle-info"></i></h1>
                 <div class="col-4"></div>
@@ -61,12 +61,10 @@
                         </b-card-body>
 
                         <b-list-group flush>
-
                             <b-list-group-item>
                                 <strong>Code : </strong>
                                 ${product.productSelect.code}
                             </b-list-group-item>
-
 
                             <b-list-group-item>
                                 <strong>Price : </strong>
@@ -76,11 +74,6 @@
                             <b-list-group-item>
                                 <strong>Stock : </strong>
                                 ${product.productSelect.stock}
-                            </b-list-group-item>
-
-                            <b-list-group-item>
-                                <strong>Status : </strong>
-                                ${product.productSelect.status}
                             </b-list-group-item>
                         </b-list-group>
 
@@ -101,11 +94,11 @@
                 <b-label class="mx-1"><strong>Description : </strong></b-label>
                 <b-form-input v-model="newProduct.description" placeholder="Enter a description..."></b-form-input><br>
                 <b-label class="mx-1"><strong>Code : </strong></b-label>
-                <b-form-input v-model="newProduct.code" type="number" placeholder="Enter a code..."></b-form-input><br>
+                <b-form-input v-model="newProduct.code" type="text"  @keypress="onlyNumbers" placeholder="Enter a code..."></b-form-input><br>
                 <b-label class="mx-1"><strong>Price : </strong></b-label>
-                <b-form-input v-model="newProduct.price" type="number" placeholder="Enter a price..."></b-form-input><br>
+                <b-form-input v-model="newProduct.price"  type="text" @input="formatPrice" @keypress="onlyNumbers" placeholder="Enter a price..."></b-form-input><br>
                 <b-label class="mx-1"><strong>Stock : </strong></b-label>
-                <b-form-input v-model="newProduct.stock" type="number" placeholder="Enter a stock..."></b-form-input><br>
+                <b-form-input v-model="newProduct.stock"  type="text" @keypress="onlyNumbers" placeholder="Enter a stock..."></b-form-input><br>
                 <b-label class="mx-1"><strong>Category : </strong></b-label>
                 <b-form-select v-model="newProduct.category" :options="category.categorys"></b-form-select>
             </div>
@@ -116,10 +109,10 @@
 
         </b-modal>
 
-        <b-modal id="modal-inactive-products" size="xl" title="Inactive products">
-            <b-table striped hover :items="inactiveProducts" :fields="product.productFields">>
+        <b-modal id="modal-inactive-products" size="xl" title="Inactive products ⬇️">
+            <b-table striped hover :items="inactiveProducts" :fields="product.productFields">
                 <template #cell(actions)="row">
-                    <b-button variant="primary" size="sm" class="mr-1" @click="inactiveProduct(row.item)">Activate</b-button>
+                    <b-button variant="success" size="sm" class="mr-1" @click="inactiveProduct(row.item)">Activate <i class="fa-solid fa-upload"></i></b-button>
                 </template>
             </b-table>
             <div v-if="inactiveProducts.length === 0"><h4><strong>No inactive products!</strong></h4></div>

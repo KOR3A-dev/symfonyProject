@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\OrderDetailRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Order;
+use App\Entity\Product;
 use App\Entity\Customer;
 
 #[ORM\Entity(repositoryClass: OrderDetailRepository::class)]
@@ -36,6 +37,23 @@ class OrderDetail
     {
         $this->customer = $customer;
 
+        return $this;
+    }
+
+    /**
+     * Customer to orderDetail relationship
+     */
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'orderDetails')]
+    private $product;
+
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?Product $product): self
+    {
+        $this->product = $product;
         return $this;
     }
 

@@ -12,7 +12,6 @@ let app = new Vue({
         selected: null,
         showModalCreate: false,
         showCard : false,
-
         newProduct: {},
         inactiveProducts: [],
         product: {
@@ -71,13 +70,16 @@ let app = new Vue({
             }
         },
           
-
         async getProduct({code}){
             let response =  await axios.get(`http://localhost:8000/product/${code}`)
             this.product.productSelect = response.data            
         },
 
         async createProduct(){
+
+            /* omit any characters that come with the value price */
+            this.newProduct.price = this.newProduct.price.replace(/[\$\.]/g, '').replace(',', '.');
+            
             try {
                 const formData = new FormData()
                 formData.append('title', this.newProduct.title)
@@ -119,6 +121,30 @@ let app = new Vue({
                 value: category.id,
                 text: category.name
             }))
-        }
+        },
+
+        onlyNumbers(event) {
+            const keyCode = event.keyCode || event.which;
+            const isNumber = keyCode >= 48 && keyCode <= 57;
+            if (!isNumber) {
+                event.preventDefault();
+            }
+        }, 
+
+        formatPrice(value) {
+            value = value.replace(/\D/g, '');
+            let parts = [];
+      
+            while (value.length > 3) {
+              parts.unshift(value.slice(-3));
+              value = value.slice(0, -3);
+            }
+
+            if (value) {
+              parts.unshift(value);
+            }
+      
+            this.newProduct.price = '$' + parts.join('.');
+        },
     },
 })
