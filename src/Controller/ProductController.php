@@ -19,19 +19,18 @@ class ProductController extends AbstractController
         $entityManager = $doctrine->getManager();
         $products = $entityManager->getRepository(Product::class)->findAll();
         $data = [];
-        foreach ($products as $product) {
-            if ($product->isStatus()) {
-                $data[] = [
-                    'id' => $product->getId(),
-                    'title' => $product->getTitle(),
-                    'description' => $product->getDescription(),
-                    'code' => $product->getCode(),
-                    'price' => $product->getPrice(),
-                    'stock' => $product->getStock(),
-                    'status' => $product->isStatus(),
-                    'category' => $product->getCategory()->getName()
-                ];
-            }
+        foreach ($products as $product) { 
+            $data[] = [
+                'id' => $product->getId(),
+                'title' => $product->getTitle(),
+                'description' => $product->getDescription(),
+                'code' => $product->getCode(),
+                'price' => $product->getPrice(),
+                'stock' => $product->getStock(),
+                'status' => $product->isStatus(),
+                'category' => $product->getCategory()->getName()
+            ];
+            
         }
         return new JsonResponse($data, Response::HTTP_OK);
     }
@@ -139,14 +138,21 @@ class ProductController extends AbstractController
     #[Route('/inactivate/product/{code}', name: 'app_inactivate_product', methods: ['PUT'])]
     public function inactivateProduct(Product $product, ManagerRegistry $doctrine): JsonResponse
     {
-        $product->setStatus(false);
-
+        $status = $product->IsStatus();
+        if ($status) {
+            $product->setStatus(false);
+            $message = 'Product inactivated successfully';
+        } else {
+            $product->setStatus(true);
+            $message = 'Product activated successfully';
+        }
+        
         $entityManager = $doctrine->getManager();
         $entityManager->flush();
-
+    
         return new JsonResponse([
-            'message' => 'Product inactivated successfully',
+            'message' => $message,
         ]);
     }
-
+    
 }

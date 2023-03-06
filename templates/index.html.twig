@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.14/vue.min.js" integrity="sha512-BAMfk70VjqBkBIyo9UTRLl3TBJ3M0c6uyy2VMUrq370bWs7kchLNN9j1WiJQus9JAJVqcriIUX859JOm12LWtw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-vue/2.23.1/bootstrap-vue.min.js"  integrity="sha512-SP/zE7YazvnUG95bWnA1AeC5+WtAOqumEHSgcKTNfVefAMsDcVCt6D3Q3goqR3vSf50zPG3OZtnMjBJd9GBgkw=="  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="{{ asset('main.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('styless.css')}}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js" integrity="sha512-LUKzDoJKOLqnxGWWIBM4lzRBlxcva2ZTztO8bTcWPmDSpkErWx0bSP4pdsjNH8kiHAUPaT06UXcb+vOEZH+HpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.css" integrity="sha384-..." crossorigin="anonymous">
+    <link defer href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"  crossorigin="anonymous"></script>
+    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/726/726570.png">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css" rel="stylesheet">
+    <title>Shopping Store</title>
+</head>
+
+<body>
+    <div id="app">
+        <h1 class="text-center my-3">Online Store 🚀</h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <b-button class="m-2" size="sm" variant="success" v-b-modal.modal-create-product>Create product <i class="fa-solid fa-circle-plus"></i></b-button>
+                    <b-button class="m-2" size="sm" variant="warning" v-b-modal.modal-inactive-products>Inactive products <i class="fa-solid fa-eye-slash"></i></b-button>
+                    <h2>Products available</h2>
+                    <b-table class="my-2" 
+                        :items="product.products" 
+                        :fields="product.productFields">
+                        <template #cell(actions)="row">
+                            <b-button class="my-2 rounded-circle" variant="primary" @click="getProduct(row.item); showCard=true"> <i class="fa-solid fa-eye"></i></b-button>
+                            <b-button class="my-2 rounded-circle" variant="danger" @click="inactiveProduct(row.item)"><i class="fa-solid fa-trash"></i></b-button>
+                            <b-button class="my-2 rounded-circle" variant="success"><i class=" my-1 fa-solid fa-cart-shopping"></i></b-button>
+                        </template>
+                    </b-table>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="container my-1">
+            <div class="row" v-if="showCard">
+                <h1 class="text-center mb-4">Product Information <i class="fa-solid fa-circle-info"></i></h1>
+                <div class="col-4"></div>
+                <div class="col-4 mx-3 mb-2">
+                    <b-card no-body style="max-width: 20rem;"
+                        img-src="https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg" img-top>
+
+                        <template #header>
+                            <h1 class="mb-0 text-center"><strong>${product.productSelect.title}</strong></h4>
+                        </template>
+
+                        <b-card-body>
+                            <b-card-text class="text-center">
+                                ${product.productSelect.description}
+                            </b-card-text>
+                        </b-card-body>
+
+                        <b-list-group flush>
+
+                            <b-list-group-item>
+                                <strong>Code : </strong>
+                                ${product.productSelect.code}
+                            </b-list-group-item>
+
+
+                            <b-list-group-item>
+                                <strong>Price : </strong>
+                                $${product.productSelect.price}
+                            </b-list-group-item>
+
+                            <b-list-group-item>
+                                <strong>Stock : </strong>
+                                ${product.productSelect.stock}
+                            </b-list-group-item>
+
+                            <b-list-group-item>
+                                <strong>Status : </strong>
+                                ${product.productSelect.status}
+                            </b-list-group-item>
+                        </b-list-group>
+
+                        <b-card-footer><strong>Category : ${product.productSelect.category}</strong></b-card-footer>
+                    </b-card>
+                </div>
+                <div class="col-4"></div>
+            </div>
+        </div>
+
+
+        {# MODALS #}
+        <b-modal id="modal-create-product" v-model="showModalCreate" title="Create product 🛍️" hide-footer>
+
+            <div class="d-block">
+                <b-label class="mx-1"><strong>Title : </strong></b-label>
+                <b-form-input v-model="newProduct.title" placeholder="Enter a title..."></b-form-input><br>
+                <b-label class="mx-1"><strong>Description : </strong></b-label>
+                <b-form-input v-model="newProduct.description" placeholder="Enter a description..."></b-form-input><br>
+                <b-label class="mx-1"><strong>Code : </strong></b-label>
+                <b-form-input v-model="newProduct.code" type="number" placeholder="Enter a code..."></b-form-input><br>
+                <b-label class="mx-1"><strong>Price : </strong></b-label>
+                <b-form-input v-model="newProduct.price" type="number" placeholder="Enter a price..."></b-form-input><br>
+                <b-label class="mx-1"><strong>Stock : </strong></b-label>
+                <b-form-input v-model="newProduct.stock" type="number" placeholder="Enter a stock..."></b-form-input><br>
+                <b-label class="mx-1"><strong>Category : </strong></b-label>
+                <b-form-select v-model="newProduct.category" :options="category.categorys"></b-form-select>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <b-button class="mt-3" variant="success" @click="createProduct()">Create <i class="fa-solid fa-circle-right"></i></b-button>
+            </div>
+
+        </b-modal>
+
+        <b-modal id="modal-inactive-products" size="xl" title="Inactive products">
+            <b-table striped hover :items="inactiveProducts" :fields="product.productFields">>
+                <template #cell(actions)="row">
+                    <b-button variant="primary" size="sm" class="mr-1" @click="inactiveProduct(row.item)">Activate</b-button>
+                </template>
+            </b-table>
+            <div v-if="inactiveProducts.length === 0"><h4><strong>No inactive products!</strong></h4></div>
+        </b-modal>
+    </div>
+</body>
+
+</html>
