@@ -9,9 +9,13 @@ let app = new Vue({
     },
 
     data: () => ({
+        showOnlineStore: true,
+        showLoginForm: false,
+        showRegistrationForm: false,
         selected: null,
         showModalCreate: false,
         showCard : false,
+
         newProduct: {},
         inactiveProducts: [],
         product: {
@@ -29,10 +33,26 @@ let app = new Vue({
             ],
         },
 
+        newCustomer: {},
+        loginCustomer: {},
+        customer: {
+            customerSelect : {},
+            customers : [],
+            customerFields : [
+                { name: 'fullname', lable: 'Full Name'},
+                { name: 'email', lable: 'Email'},
+                { name: 'password', lable: 'Password'},
+                { name: 'address', lable: 'Address'},
+                { name: 'date_birth', lable: 'Date birth'},
+            ],
+        },
+
+
         category: {
             categorys : []
         }
     }),
+    
     methods: {
     
         /*  Methods Product */
@@ -45,7 +65,7 @@ let app = new Vue({
                     title: item.title,
                     description :  item.description,
                     code : item.code,
-                    price : item.price,
+                    price : "$" + item.price,
                     stock : item.stock,
                     status : item.status ? "available" : "not available",
                     category : item.category,
@@ -66,7 +86,12 @@ let app = new Vue({
                 }))
 
             } catch (error) {
-              console.error(error)
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.message,
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                })
             }
         },
           
@@ -76,10 +101,8 @@ let app = new Vue({
         },
 
         async createProduct(){
-
             /* omit any characters that come with the value price */
             this.newProduct.price = this.newProduct.price.replace(/[\$\.]/g, '').replace(',', '.');
-            
             try {
                 const formData = new FormData()
                 formData.append('title', this.newProduct.title)
@@ -99,7 +122,12 @@ let app = new Vue({
                 })
                 this.getProducts()
             } catch (error) {
-                console.error(error)
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.message,
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                })
             }
         },
 
@@ -123,6 +151,7 @@ let app = new Vue({
             }))
         },
 
+        /*  Format Inputs */
         onlyNumbers(event) {
             const keyCode = event.keyCode || event.which;
             const isNumber = keyCode >= 48 && keyCode <= 57;
@@ -146,5 +175,59 @@ let app = new Vue({
       
             this.newProduct.price = '$' + parts.join('.');
         },
+
+        /*  Methods Customer */
+        async getCustomer(id){
+            let response = await axios.get(`http://localhost:8000/customer/${id}`)
+            this.customer.customers = response.data
+        }, 
+        
+        async createCustomer(){
+            try {
+                const formData = new FormData()
+                formData.append('fullname', this.newCustomer.fullname)
+                formData.append('email', this.newCustomer.email)
+                formData.append('password', this.newCustomer.password)
+                formData.append('address', this.newCustomer.address)
+                formData.append('date_birth', this.newCustomer.date_birth)
+                let response = await axios.post('http://localhost:8000/create/customer', formData)
+                Swal.fire({
+                    title: 'Successfully!',
+                    text: response.data.message,
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                })
+                this.newCustomer = { fullname: '', email: '', password: '', address: '', date_birth: '' }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.message,
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                })   
+            }
+        },
+
+        async login(){
+            try {
+                const formData = new FormData()
+                formData.append('email', this.loginCustomer.email)
+                formData.append('password', this.loginCustomer.password)
+                let response = await axios.post('http://localhost:8000/login', formData)
+                Swal.fire({
+                    title: 'Successfully!',
+                    text: response.data.message,
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                })
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.message,
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                })   
+            }
+        }
     },
 })

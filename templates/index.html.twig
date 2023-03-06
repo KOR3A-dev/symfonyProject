@@ -22,68 +22,145 @@
 
 <body>
     <div id="app">
-        <h1 class="text-center my-3">Online Store 🚀</h1>
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <b-button class="m-2" size="sm" variant="success" v-b-modal.modal-create-product>Create product <i class="fa-solid fa-circle-plus"></i></b-button>
-                    <b-button class="m-2" size="sm" variant="warning" v-b-modal.modal-inactive-products>Inactive products <i class="fa-solid fa-eye-slash"></i></b-button>
-                    <h2>Products available</h2>
-                    <b-table class="my-2" 
-                        :items="product.products" 
-                        :fields="product.productFields">
-                        <template #cell(actions)="row">
-                            <a href="#product-card"><b-button class="my-2 rounded-circle" variant="primary" @click="getProduct(row.item); showCard=true"> <i class="fa-solid fa-eye"></i></b-button></a>
-                            <b-button class="my-2 rounded-circle" variant="danger" @click="inactiveProduct(row.item)"><i class="fa-solid fa-trash"></i></b-button>
-                            <b-button class="my-2 rounded-circle" variant="success"><i class=" my-1 fa-solid fa-cart-shopping"></i></b-button>
-                        </template>
-                    </b-table>
+        <div>
+            <b-nav tabs align="center">
+                <b-nav-item :active="showOnlineStore" @click="showLoginForm = false; showRegistrationForm = false; showOnlineStore= true">Store <i class="fa-solid fa-store"></i></b-nav-item>
+                <b-nav-item :active="showRegistrationForm" @click="showLoginForm = false; showRegistrationForm = true; showOnlineStore = false">Register <i class="fa-solid fa-user-plus"></i></b-nav-item>
+                <b-nav-item :active="showLoginForm" @click="showLoginForm = true; showRegistrationForm = false; showOnlineStore= false">Login <i class="fa-solid fa-user"></i></b-nav-item>
+            </b-nav>
+        </div>
+
+        <div v-if="showLoginForm">
+            <h1 class="text-center my-3">Login</h1>
+             <div class="container">
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-4">
+                        <b-card class="card shadow">
+                            <b-form-group label="Email:" label-for="email-input">
+                                <b-form-input type="email" placeholder="Enter a email..." v-model="newCustomer.email"></b-form-input>
+                            </b-form-group>
+
+                            <b-form-group label="Password:" label-for="password-input">
+                                <b-form-input type="password" placeholder="Enter a password..." v-model="newCustomer.password"></b-form-input>
+                            </b-form-group>
+
+                            <div class="d-flex justify-content-end">
+                                <b-button class="my-2" variant="success" @click="login()">Enter <i class="fa-solid fa-right-to-bracket"></i></b-button>
+                            </div>
+            
+                        </b-card>
+                    </div>
+                    <div class="col-4"></div>
                 </div>
             </div>
         </div>
-        <hr class="my-4">
-        <div id="product-card" class="container my-1">
-            <div class="row" v-if="showCard">
-                <h1 class="text-center mb-4">Product Information <i class="fa-solid fa-circle-info"></i></h1>
-                <div class="col-4"></div>
-                <div class="col-4 mx-3 mb-2">
-                    <b-card no-body style="max-width: 20rem;"
-                        img-src="https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg" img-top>
 
-                        <template #header>
-                            <h1 class="mb-0 text-center"><strong>${product.productSelect.title}</strong></h4>
-                        </template>
+        <div v-if="showRegistrationForm">
+            <h1 class="text-center my-3">Register</h1>
+            <div class="container">
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-4">
+                        <b-card class="card shadow">
+                            <b-form-group label="Full Name:" label-for="fullname-input">
+                                <b-form-input type="text" placeholder="Enter a fullname..." v-model="newCustomer.fullname"></b-form-input>
+                            </b-form-group>
 
-                        <b-card-body>
-                            <b-card-text class="text-center">
-                                ${product.productSelect.description}
-                            </b-card-text>
-                        </b-card-body>
+                            <b-form-group label="Email:" label-for="email-input">
+                                <b-form-input type="email" placeholder="Enter a email..." v-model="newCustomer.email"></b-form-input>
+                            </b-form-group>
 
-                        <b-list-group flush>
-                            <b-list-group-item>
-                                <strong>Code : </strong>
-                                ${product.productSelect.code}
-                            </b-list-group-item>
+                            <b-form-group label="Password:" label-for="password-input">
+                                <b-form-input type="password" placeholder="Enter a password..." v-model="newCustomer.password"></b-form-input>
+                            </b-form-group>
 
-                            <b-list-group-item>
-                                <strong>Price : </strong>
-                                $${product.productSelect.price}
-                            </b-list-group-item>
+                            <b-form-group label="Address:" label-for="address-input">
+                                <b-form-input type="text" placeholder="Enter a address..." v-model="newCustomer.address"></b-form-input>
+                            </b-form-group>
 
-                            <b-list-group-item>
-                                <strong>Stock : </strong>
-                                ${product.productSelect.stock}
-                            </b-list-group-item>
-                        </b-list-group>
+                            <b-form-group label="Date of Birth:" label-for="date-input">
+                                <b-form-datepicker v-model="newCustomer.date_birth"></b-form-datepicker>
+                            </b-form-group>
 
-                        <b-card-footer><strong>Category : ${product.productSelect.category}</strong></b-card-footer>
-                    </b-card>
+                            <div class="d-flex justify-content-center mt-4">
+                                <b-button class="my-2" variant="success" @click="createCustomer()">Register <i class="fa-solid fa-right-to-bracket"></i></b-button>
+                            </div>  
+                            <div class="d-flex justify-content-center">
+                                <a :active="showLoginForm" @click="showLoginForm = true; showRegistrationForm = false; showOnlineStore= false">
+                                    <u>Go to login </u> <i class="fa-solid fa-right-long"></i>
+                                </a>
+                            </div>
+                        </b-card>
+                    </div>
+                    <div class="col-4"></div>
                 </div>
-                <div class="col-4"></div>
             </div>
         </div>
 
+        <div v-if="showOnlineStore">
+            <h1 class="text-center my-3">Online Store 🚀</h1>
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <b-button class="m-2" size="sm" variant="success" v-b-modal.modal-create-product>Create product <i class="fa-solid fa-circle-plus"></i></b-button>
+                        <b-button class="m-2" size="sm" variant="warning" v-b-modal.modal-inactive-products>Inactive products <i class="fa-solid fa-eye-slash"></i></b-button>
+                        <h2>Products available</h2>
+                        <b-table class="my-2" 
+                            :items="product.products" 
+                            :fields="product.productFields">
+                            <template #cell(actions)="row">
+                                <a href="#product-card"><b-button class="my-2 rounded-circle" variant="primary" @click="getProduct(row.item); showCard=true"> <i class="fa-solid fa-eye"></i></b-button></a>
+                                <b-button class="my-2 rounded-circle" variant="danger" @click="inactiveProduct(row.item)"><i class="fa-solid fa-trash"></i></b-button>
+                                <b-button class="my-2 rounded-circle" variant="success"><i class=" my-1 fa-solid fa-cart-shopping"></i></b-button>
+                            </template>
+                        </b-table>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div id="product-card" class="container my-1">
+                <div class="row" v-if="showCard">
+                    <h1 class="text-center mb-4">Product Information <i class="fa-solid fa-circle-info"></i></h1>
+                    <div class="col-4"></div>
+                    <div class="col-4 mx-3 mb-2">
+                        <b-card no-body style="max-width: 20rem;"
+                            img-src="https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg" img-top>
+
+                            <template #header>
+                                <h1 class="mb-0 text-center"><strong>${product.productSelect.title}</strong></h4>
+                            </template>
+
+                            <b-card-body>
+                                <b-card-text class="text-center">
+                                    ${product.productSelect.description}
+                                </b-card-text>
+                            </b-card-body>
+
+                            <b-list-group flush>
+                                <b-list-group-item>
+                                    <strong>Code : </strong>
+                                    ${product.productSelect.code}
+                                </b-list-group-item>
+
+                                <b-list-group-item>
+                                    <strong>Price : </strong>
+                                    $${product.productSelect.price}
+                                </b-list-group-item>
+
+                                <b-list-group-item>
+                                    <strong>Stock : </strong>
+                                    ${product.productSelect.stock}
+                                </b-list-group-item>
+                            </b-list-group>
+
+                            <b-card-footer><strong>Category : ${product.productSelect.category}</strong></b-card-footer>
+                        </b-card>
+                    </div>
+                    <div class="col-4"></div>
+                </div>
+            </div>
+        </div>
 
         {# MODALS #}
         <b-modal id="modal-create-product" v-model="showModalCreate" title="Create product 🛍️" hide-footer>
@@ -117,6 +194,7 @@
             </b-table>
             <div v-if="inactiveProducts.length === 0"><h4><strong>No inactive products!</strong></h4></div>
         </b-modal>
+
     </div>
 </body>
 
