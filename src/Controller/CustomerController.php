@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Customer;
@@ -39,9 +38,9 @@ class CustomerController extends AbstractController
         $customer = new Customer();
         $customer->setFullname($request->request->get('fullname'));
         $customer->setEmail($request->request->get('email'));
-        
+
         /* encript password */
-        $hashedPassword = password_hash($request->request->get('password') . bin2hex(random_bytes(22)), PASSWORD_BCRYPT);
+        $hashedPassword = password_hash($request->request->get('password'), PASSWORD_DEFAULT);
         $customer->setPassword($hashedPassword);
 
         $customer->setAddress($request->request->get('address'));
@@ -57,7 +56,7 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/login', name: 'app_login', methods: ['POST'])]
-    public function login(Request $request, ManagerRegistry $doctrine, SessionInterface $session): JsonResponse
+    public function login(Request $request, ManagerRegistry $doctrine): JsonResponse
     {
         $email = $request->request->get('email');
         $password = $request->request->get('password');
@@ -70,10 +69,11 @@ class CustomerController extends AbstractController
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $session->set('customer', $customer->getId());
+        $customer_session = $customer->getId();
 
         return new JsonResponse([
             'message' => 'Logged in successfully',
+            'customer_session' => $customer_session
         ], Response::HTTP_OK);
     }
 }

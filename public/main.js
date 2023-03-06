@@ -1,4 +1,3 @@
-
 let app = new Vue({
     el: '#app',
     delimiters : ['${', '}'],
@@ -213,6 +212,7 @@ let app = new Vue({
                 const formData = new FormData()
                 formData.append('email', this.loginCustomer.email)
                 formData.append('password', this.loginCustomer.password)
+
                 let response = await axios.post('http://localhost:8000/login', formData)
                 Swal.fire({
                     title: 'Successfully!',
@@ -220,6 +220,8 @@ let app = new Vue({
                     icon: 'success',
                     confirmButtonText: 'Ok'
                 })
+                let session = response.data.customer_session
+                localStorage.setItem('customer_session', session)
             } catch (error) {
                 Swal.fire({
                     title: 'Error!',
@@ -229,5 +231,8 @@ let app = new Vue({
                 })   
             }
         }
+
+        /*  Methods Order */
+         
     },
 })
